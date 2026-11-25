@@ -24,5 +24,12 @@ db.exec(`
   )
 `);
 
+// Sprzątanie wygasłych tokenów: raz na starcie i potem co godzinę.
+function deleteExpiredTokens() {
+  db.prepare('DELETE FROM tokens WHERE expires_at < ?').run(new Date().toISOString());
+}
+deleteExpiredTokens();
+setInterval(deleteExpiredTokens, 60 * 60 * 1000).unref(); // unref: timer nie blokuje zamknięcia serwera
+
 // Wystawiamy połączenie na zewnątrz, żeby inne pliki mogły go użyć.
 module.exports = db;

@@ -17,6 +17,17 @@ app.get('/', (req, res) => {
 
 app.use(authRoutes); // podpinamy wszystkie okienka z routes/auth.js
 
+
+app.use((err, req, res, next) => {
+  console.error(err); // szczegóły tylko w konsoli serwera, dla Ciebie
+
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Zły format danych' });
+  }
+
+  res.status(500).json({ error: 'Coś poszło nie tak po stronie serwera' });
+});
+
 app.listen(3000, () => {
   console.log('Serwer słucha na porcie 3000');
 });
